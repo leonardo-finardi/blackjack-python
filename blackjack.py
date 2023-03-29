@@ -60,9 +60,22 @@ def play_blackjack(n_decks):
     roundCount = 1
     numberWins = 0
     numberLoss = 0
+    playerChips = 10000
+    deck = [(rank, suit) for rank in ranks for suit in suits] * n_decks
+    random.shuffle(deck)
     while cardsLeft >=10:
-        deck = [(rank, suit) for rank in ranks for suit in suits] * n_decks
-        random.shuffle(deck)
+        
+        # break game
+        if playerChips<=0:
+            print("End game! Out of chips")
+            return
+
+        # betting turn
+        startBet = -1
+        while int(startBet)<=0 or int(startBet)>int(playerChips):
+            startBet = input(f'\n How many chips you wanna bet? ( máx. {playerChips}) :  ')
+
+        # start game
         player_hand = [deck.pop(), deck.pop()]
         dealer_hand = [deck.pop(), deck.pop()]
         cardsLeft -= 4
@@ -71,9 +84,10 @@ def play_blackjack(n_decks):
         print(f"-----           CARD COUNT {-1*get_card_count(deck)}               -----")
         print(f"-----  Cartas restantes: {cardsLeft} , W: {numberWins} / L: {numberLoss} -----")   
         print(f"------------------------------------------------")
+
         # player turn
         while get_hand_value(player_hand) < 21:
-            print(f'Player hand: {create_hand_name(player_hand)} ( {get_hand_value(player_hand)} )  |  Dealer hand: {create_hand_name(dealer_hand)} ( {get_hand_value(dealer_hand)} )', end="\r")
+            print(f"Player hand: {create_hand_name(player_hand)} ( {get_hand_value(player_hand)} )  |  Dealer hand: ['{create_hand_name(dealer_hand)[0]}', ? ] ( ? )", end="\r")
             choice = input('\n Hit or stand? (h/s)')
             if choice.lower() == 'h':
                 player_hand.append(deck.pop())
@@ -92,20 +106,25 @@ def play_blackjack(n_decks):
         print(f'Player hand: {create_hand_name(player_hand)} ( {player_hand_value} )  |  Dealer hand: {create_hand_name(dealer_hand)} ( {dealer_hand_value} )', end="\r" )
         if player_hand_value > 21:
             print('Player busts! Dealer wins.')
+            playerChips -= int(startBet)
             numberLoss += 1
         elif dealer_hand_value > 21:
             print('Dealer busts! Player wins.')
+            playerChips += int(startBet)
             numberWins += 1
         elif player_hand_value > dealer_hand_value:
             print('Player wins!')
+            playerChips += int(startBet)
             numberWins += 1
         elif player_hand_value < dealer_hand_value:
             print('Dealer wins!')
+            playerChips -= int(startBet)
             numberLoss += 1
         else:
             print('Push.')
         print("\n\n\n")
         roundCount += 1
 
-n_decks = int(input("How many decks you wanna play?"))
+n_decks = int(input("How many decks you wanna play?  "))
 play_blackjack(n_decks)
+print("Thank you for playing")
