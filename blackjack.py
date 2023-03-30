@@ -83,17 +83,27 @@ def play_blackjack(n_decks):
         print(f"-----                ROUND {roundCount}               -----")
         print(f"-----           CARD COUNT {-1*get_card_count(deck)}               -----")
         print(f"-----  Cartas restantes: {cardsLeft} , W: {numberWins} / L: {numberLoss} -----")   
+        print(f"-----            YOUR BET: {startBet}         -----")
         print(f"------------------------------------------------")
 
         # player turn
         while get_hand_value(player_hand) < 21:
             print(f"Player hand: {create_hand_name(player_hand)} ( {get_hand_value(player_hand)} )  |  Dealer hand: ['{create_hand_name(dealer_hand)[0]}', ? ] ( ? )", end="\r")
-            choice = input('\n Hit or stand? (h/s)')
-            if choice.lower() == 'h':
-                player_hand.append(deck.pop())
-                cardsLeft -= 1
-            else:
-                break
+            choice = input('\n Hit, stand or double? (h/s/d)')
+            match choice.lower():
+                case 'h':
+                    player_hand.append(deck.pop())
+                    cardsLeft -= 1
+                case 'd':
+                    if int(playerChips) >= 2*int(startBet):
+                        startBet = int(startBet)*2
+                        player_hand.append(deck.pop())
+                        cardsLeft -= 1
+                        break
+                    else:
+                        print("You don't have enought chips to double")
+                case 's':
+                    break
 
         # dealer turn
         while get_hand_value(dealer_hand) < 17:
